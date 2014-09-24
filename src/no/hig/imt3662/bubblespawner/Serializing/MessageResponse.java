@@ -15,16 +15,28 @@ public abstract class MessageResponse {
         this.message = new HashMap<String, Object>();
     }
 
-    protected void setValue(String key, Object value) {
+    public void setValue(String key, Object value) {
         message.put(key, value);
     }
 
-    public String serializeToJosn() {
+    protected void writeHeader() {
         String identifier = getIdentifier();
-        if (identifier != null)
-            setValue("identifier", identifier);
+        setValue("identifier", identifier);
+    }
+
+    public String serializeToJson(String receiver, String nextMessageId) {
+        writeHeader();
+
+        Map<String, Object> message = new HashMap<String, Object>();
+        message.put("to", receiver);
+        message.put("message_id", nextMessageId);
+        message.put("data", JSONValue.toJSONString(this.message));
 
         return JSONValue.toJSONString(message);
+    }
+
+    protected String serializeJSON() {
+        return JSONValue.toJSONString(this.message);
     }
 
     public abstract String getIdentifier();
