@@ -1,5 +1,7 @@
 package no.hig.imt3662.bubblespawner.MessageHandling;
 
+import no.hig.imt3662.bubblespawner.MainEnvironment;
+
 import java.util.Map;
 
 /**
@@ -13,6 +15,7 @@ public class PostMessage implements MessageHandler {
         double longitude = Double.parseDouble((String) data.get("longitude"));
         boolean broadcastLocation = Boolean.parseBoolean((String) data.get("broadcast_location"));
 
+        MainEnvironment.getDefaultLogger().info("Posting message " + message+ "," + latitude + "," + longitude + " gps" + broadcastLocation);
     }
 
     @Override

@@ -1,7 +1,6 @@
 package no.hig.imt3662.bubblespawner;
 
-import no.hig.imt3662.bubblespawner.MessageHandling.AckHandler;
-import no.hig.imt3662.bubblespawner.MessageHandling.MessageHandler;
+import no.hig.imt3662.bubblespawner.MessageHandling.*;
 import no.hig.imt3662.bubblespawner.Serializing.Ack;
 import no.hig.imt3662.bubblespawner.Serializing.MessageResponse;
 import org.jivesoftware.smack.PacketListener;
@@ -23,6 +22,9 @@ public class MessageEventDispatcher implements PacketListener {
         this.messageEvents = new HashMap<String, MessageHandler>();
 
         registerHandler(new AckHandler());
+        registerHandler(new DestroyNode());
+        registerHandler(new PostMessage());
+        registerHandler(new ServerStatus());
     }
 
     private void registerHandler(MessageHandler handler) {

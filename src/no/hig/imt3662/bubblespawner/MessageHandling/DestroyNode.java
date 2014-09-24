@@ -1,5 +1,7 @@
 package no.hig.imt3662.bubblespawner.MessageHandling;
 
+import no.hig.imt3662.bubblespawner.MainEnvironment;
+
 import java.util.Map;
 
 /**
@@ -8,7 +10,7 @@ import java.util.Map;
 public class DestroyNode implements MessageHandler {
     @Override
     public void invoke(Map<String, Object> data, String sender) {
-
+        MainEnvironment.getDefaultLogger().info("Destroying node");
     }
 
     @Override
