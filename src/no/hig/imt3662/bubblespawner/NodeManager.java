@@ -13,7 +13,7 @@ public class NodeManager {
         PreparedStatement stmt;
 
         try {
-            try { // TODO get within a distance
+            try {
                 con = MainEnvironment.getDatabaseManager().getConnection();
                 stmt = con.prepareStatement("SELECT"
                         + "  id, gcmKey, latitude, longitude, lastPinged, lastPingReceived, ("
@@ -29,7 +29,8 @@ public class NodeManager {
                         + "HAVING distance > ?");
                 stmt.setDouble(1, location.getLatitude());
                 stmt.setDouble(2, location.getLongitude());
-                stmt.setInt(3, distance);
+                stmt.setDouble(3, location.getLatitude());
+                stmt.setInt(4, distance);
 
                 ResultSet rs = stmt.executeQuery();
 
@@ -120,7 +121,7 @@ public class NodeManager {
         PreparedStatement stmt;
 
         try {
-            try { // TODO get within a distance
+            try {
                 con = MainEnvironment.getDatabaseManager().getConnection();
                 stmt = con.prepareStatement("SELECT id, gcmKey, latitude, longitude, lastPinged, lastPingReceived "
                         + "FROM Node "
