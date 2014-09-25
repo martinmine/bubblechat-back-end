@@ -15,11 +15,21 @@ public class NodeManager {
         try {
             try { // TODO get within a distance
                 con = MainEnvironment.getDatabaseManager().getConnection();
-                stmt = con.prepareStatement("SELECT id, gcmKey, latitude, longitude, lastPinged, lastPingReceived "
-                        + "FROM Node "
-                        + "WHERE latitude = ? AND longitude = ?");
+                stmt = con.prepareStatement("SELECT"
+                        + "  id, gcmKey, latitude, longitude, lastPinged, lastPingReceived, ("
+                        + "    3959 * 1609.344 * acos ("
+                        + "      cos(radians(?))"
+                        + "      * cos(radians(latitude))"
+                        + "      * cos(radians(longitude) - radians(?))"
+                        + "      + sin (radians(?))"
+                        + "      * sin(radians(latitude))"
+                        + "    )"
+                        + "  ) AS distance"
+                        + "FROM Node"
+                        + "HAVING distance > ?");
                 stmt.setDouble(1, location.getLatitude());
                 stmt.setDouble(2, location.getLongitude());
+                stmt.setInt(3, distance);
 
                 ResultSet rs = stmt.executeQuery();
 
