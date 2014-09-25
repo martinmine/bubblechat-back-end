@@ -14,6 +14,11 @@ public class AckHandler implements MessageHandler {
         String messageID = (String) data.get("from");
         Ack response = new Ack(messageID);
         MainEnvironment.getCommunicationHandler().sendMessage(response, sender);
+
+        int userID = MainEnvironment.getNodeManager().getUserID(sender);
+        if (userID > 0) {
+            MainEnvironment.getNodeManager().setNodePinged(sender);
+        }
     }
 
     @Override

@@ -13,6 +13,7 @@ import org.xmlpull.v1.XmlPullParser;
 
 import javax.net.ssl.SSLSocketFactory;
 import java.io.IOException;
+import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -101,4 +102,6 @@ public class CommunicationHandler {
             // TODO
         }
     }
+
+
 }
