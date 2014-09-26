@@ -24,6 +24,7 @@ public class PostMessage implements MessageHandler {
         Node node = MainEnvironment.getNodeManager().getNode(sender);
         if (node != null) {
             MainEnvironment.getNodeManager().updateNodeLocation(sender, loc);
+            node.setLocation(loc);
             Location chatLocation = broadcastLocation ? node.getLocation() : Location.EMPTY;
             ChatMessage response = new ChatMessage(node.getId(), message, chatLocation, broadcastLocation, username);
             MainEnvironment.broadcastMessage(response, node.getLocation(), MainEnvironment.DEFAULT_RADIUS);

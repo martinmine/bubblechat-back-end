@@ -8,22 +8,27 @@ import java.util.TimerTask;
 import java.util.logging.Logger;
 
 /**
+ * Removes dead nodes
  * Created by Martin on 14/09/25.
  */
-public class Pinger extends TimerTask {
-    private static final Logger LOGGER = Logger.getLogger(Pinger.class.getName());
-    private Timer pingScheduler;
-    private long pingInterval;
+public class NodeVerifier extends TimerTask {
+    private static final Logger LOGGER = Logger.getLogger(NodeVerifier.class.getName());
+    private Timer scheduler;
+    private long interval;
 
-    public Pinger(long pingInterval) {
-        this.pingInterval = pingInterval;
-        this.pingScheduler = new Timer();
-        this.pingScheduler.schedule(this, pingInterval, pingInterval);
+    /**
+     * Prepares and starts the verifier
+     * @param interval How often to check for dead nodes in seconds
+     */
+    public NodeVerifier(long interval) {
+        this.interval = interval;
+        this.scheduler = new Timer();
+        this.scheduler.schedule(this, interval, interval);
     }
 
     @Override
     public void run() {
-        List<Node> nodes = MainEnvironment.getNodeManager().findTimedOutNodes(2 * pingInterval);
+        List<Node> nodes = MainEnvironment.getNodeManager().findTimedOutNodes(2 * interval);
         for (Node node : nodes) {
             NodeLeft leaveMessage = new NodeLeft(node.getId());
             MainEnvironment.broadcastMessage(leaveMessage, node.getLocation(), MainEnvironment.DEFAULT_RADIUS);

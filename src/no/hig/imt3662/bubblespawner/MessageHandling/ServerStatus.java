@@ -2,6 +2,7 @@ package no.hig.imt3662.bubblespawner.MessageHandling;
 
 import no.hig.imt3662.bubblespawner.Location;
 import no.hig.imt3662.bubblespawner.MainEnvironment;
+import no.hig.imt3662.bubblespawner.Serializing.NodeEntered;
 import no.hig.imt3662.bubblespawner.Serializing.ServerInfo;
 
 import java.util.Map;
@@ -20,9 +21,12 @@ public class ServerStatus implements MessageHandler {
         int userID = MainEnvironment.getNodeManager().getNodeID(sender);
         if (userID == 0) { // Not registered yet
             userID = MainEnvironment.getNodeManager().registerNode(sender, location);
+
+            NodeEntered nodeEntered = new NodeEntered(userID);
+            MainEnvironment.broadcastMessage(nodeEntered, location, MainEnvironment.DEFAULT_RADIUS);
         }
 
-        int userCount = MainEnvironment.getNodeManager().getUserCount(location, MainEnvironment.DEFAULT_RADIUS);
+        int userCount = MainEnvironment.getNodeManager().getNodeCount(location, MainEnvironment.DEFAULT_RADIUS);
 
         ServerInfo response = new ServerInfo(userCount, userID);
         MainEnvironment.getCommunicationHandler().sendMessage(response, sender);

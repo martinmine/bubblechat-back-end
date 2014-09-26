@@ -51,15 +51,12 @@ public class MessageEventDispatcher implements PacketListener {
             Map<String, Object> messageValues = gcmPacket.getJsonValues();
             MessageHandler handler = null;
             String sender = (String)messageValues.get("from");
+            String messageId = (String)messageValues.get("message_id");
 
-            Ack response = new Ack(sender);
+            Ack response = new Ack(messageId);
             MainEnvironment.getCommunicationHandler().sendMessage(response, sender);
 
-            if (messageValues.containsKey("message_type")) { // Communication-level message
-                String identifier = (String)messageValues.get("message_type");
-                handler = this.messageEvents.get(identifier);
-            }
-            else if (messageValues.containsKey("data")) { // Application-level messages
+           if (messageValues.containsKey("data")) { // Application-level messages
                 // Move down to the data object in the JSON message
                 messageValues = (Map<String, Object>)messageValues.get("data");
                 String identifier = (String)messageValues.get("id");

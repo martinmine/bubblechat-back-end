@@ -24,6 +24,8 @@ public class NodeManager {
 
         try {
             try {
+                // Thanks to Google for this query:
+                //  https://developers.google.com/maps/articles/phpsqlsearch_v3#findnearsql
                 con = MainEnvironment.getDatabaseManager().getConnection();
                 stmt = con.prepareStatement("SELECT "
                         + "  id, gcmKey, latitude, longitude, lastPinged, lastPingReceived, ( "
@@ -199,7 +201,7 @@ public class NodeManager {
      * @param radius Radius of the area
      * @return Amount of users within our area
      */
-    public int getUserCount(Location location, int radius) {
+    public int getNodeCount(Location location, int radius) {
         Connection con = null;
         PreparedStatement stmt;
 

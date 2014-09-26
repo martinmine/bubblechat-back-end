@@ -4,9 +4,11 @@ import no.hig.imt3662.bubblespawner.Serializing.MessageResponse;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.List;
+import java.util.Properties;
 import java.util.logging.Logger;
 
 /**
@@ -20,7 +22,7 @@ public class MainEnvironment {
     public static final String GCM_NAMESPACE = "google:mobile:data";
 
     private static NodeManager nodeManager;
-    private static Pinger pingManager;
+    private static NodeVerifier pingManager;
     private static CommunicationHandler communicationHandler;
     private static DatabaseManager dbManager;
 
@@ -39,19 +41,28 @@ public class MainEnvironment {
     public static void initialize() {
         LOGGER.info("Initializing main environment");
 
-        // TODO read this from config + MySQL
-        final long senderId = 437017129818L; // your GCM sender id
-        final String password = "AIzaSyDPt6s8tyrzqW5nE3Q6GiEjWzAJ_ev-lnM";
-        final String gcmServer = "gcm.googleapis.com";
-        final int gcmPort = 5235;
-        final String dbUsername = "root";
-        final String dbPassword = "lol123";
-        final String dbName = "bubblechat";
-        final String dbHostname = "localhost";
-        final int dbPort = 3306;
-        final long pingInterval = 30;
+        Properties properties = new Properties();
 
-        dbManager = new DatabaseManager(dbUsername, dbPassword, dbName,dbHostname, dbPort);
+        try  {
+            FileInputStream fs = new FileInputStream("server.properties");
+            properties.load(fs);
+        }
+        catch (IOException e) {
+            LOGGER.severe("Unable to load properties file");
+        }
+
+        final long senderId = Long.valueOf(properties.getProperty("gcm.senderID"));
+        final String password = properties.getProperty("gcm.APIkey");
+        final String gcmServer = properties.getProperty("gcm.hostname");
+        final int gcmPort = Integer.valueOf(properties.getProperty("gcm.port"));
+        final String dbUsername = properties.getProperty("db.username");
+        final String dbPassword = properties.getProperty("db.password");
+        final String dbName = properties.getProperty("db.databasename");
+        final String dbHostname = properties.getProperty("db.hostname");
+        final int dbPort = Integer.valueOf(properties.getProperty("db.port"));
+        final long pingInterval = Integer.valueOf(properties.getProperty("checkInterval"));
+
+        dbManager = new DatabaseManager(dbUsername, dbPassword, dbName, dbHostname, dbPort);
 
         communicationHandler = new CommunicationHandler(gcmServer, gcmPort);
 
@@ -66,7 +77,7 @@ public class MainEnvironment {
         }
 
         nodeManager = new NodeManager();
-        pingManager = new Pinger(pingInterval);
+        pingManager = new NodeVerifier(pingInterval);
 
         LOGGER.info("Initialized");
     }
