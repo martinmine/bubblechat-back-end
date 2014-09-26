@@ -22,7 +22,7 @@ public class PostMessage implements MessageHandler {
         Location loc = new Location(latitude, longitude);
         MainEnvironment.getNodeManager().updateNodeLocation(sender, loc);
         Node node = MainEnvironment.getNodeManager().getNode(sender);
-        ChatMessage response = new ChatMessage(node.getId(), message, new Location(latitude, longitude), broadcastLocation, username);
+        ChatMessage response = new ChatMessage(node.getId(), message, node.getLocation(), broadcastLocation, username);
         MainEnvironment.broadcastMessage(response, node.getLocation(), MainEnvironment.DEFAULT_RADIUS);
     }
 

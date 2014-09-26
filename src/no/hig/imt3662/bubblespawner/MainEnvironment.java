@@ -1,7 +1,10 @@
 package no.hig.imt3662.bubblespawner;
 
 import no.hig.imt3662.bubblespawner.Serializing.MessageResponse;
+import org.jivesoftware.smack.SmackException;
+import org.jivesoftware.smack.XMPPException;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.util.List;
 import java.util.logging.Logger;
@@ -50,7 +53,6 @@ public class MainEnvironment {
 
         dbManager = new DatabaseManager(dbUsername, dbPassword, dbName,dbHostname, dbPort);
 
-/*
         communicationHandler = new CommunicationHandler(gcmServer, gcmPort);
 
         try {
@@ -61,7 +63,8 @@ public class MainEnvironment {
             e.printStackTrace();
         } catch (SmackException e) {
             e.printStackTrace();
-        }*/
+        }
+
 
         nodeManager = new NodeManager();
         pingManager = new Pinger(pingInterval);
@@ -79,6 +82,7 @@ public class MainEnvironment {
 
     public static int broadcastMessage(MessageResponse response, Location location, int radius) {
         List<Node> nodes = MainEnvironment.getNodeManager().getNodesNearby(location, radius);
+        defaultLogger.info("Broadcasting msg " + response.getIdentifier() + " to " + nodes.size() + " nodes");
         for (Node node : nodes) {
             getCommunicationHandler().sendMessage(response, node.getKey());
         }

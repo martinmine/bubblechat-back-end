@@ -11,8 +11,7 @@ import java.util.Map;
 public class AckHandler implements MessageHandler {
     @Override
     public void invoke(Map<String, Object> data, String sender) {
-        String messageID = (String) data.get("from");
-        Ack response = new Ack(messageID);
+        Ack response = new Ack(sender);
         MainEnvironment.getCommunicationHandler().sendMessage(response, sender);
 
         int userID = MainEnvironment.getNodeManager().getUserID(sender);

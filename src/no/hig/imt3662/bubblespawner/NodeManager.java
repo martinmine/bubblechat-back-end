@@ -15,18 +15,18 @@ public class NodeManager {
         try {
             try {
                 con = MainEnvironment.getDatabaseManager().getConnection();
-                stmt = con.prepareStatement("SELECT"
-                        + "  id, gcmKey, latitude, longitude, lastPinged, lastPingReceived, ("
-                        + "    3959 * 1609.344 * acos ("
-                        + "      cos(radians(?))"
-                        + "      * cos(radians(latitude))"
-                        + "      * cos(radians(longitude) - radians(?))"
-                        + "      + sin (radians(?))"
-                        + "      * sin(radians(latitude))"
-                        + "    )"
-                        + "  ) AS distance"
-                        + "FROM Node"
-                        + "HAVING distance > ?");
+                stmt = con.prepareStatement("SELECT "
+                        + "  id, gcmKey, latitude, longitude, lastPinged, lastPingReceived, ( "
+                        + "    3959 * 1609.344 * acos ( "
+                        + "      cos(radians(?)) "
+                        + "      * cos(radians(latitude)) "
+                        + "      * cos(radians(longitude) - radians(?)) "
+                        + "      + sin (radians(?)) "
+                        + "      * sin(radians(latitude)) "
+                        + "    ) "
+                        + "  ) AS distance "
+                        + "FROM Node "
+                        + "HAVING distance < ?");
                 stmt.setDouble(1, location.getLatitude());
                 stmt.setDouble(2, location.getLongitude());
                 stmt.setDouble(3, location.getLatitude());
@@ -206,7 +206,7 @@ public class NodeManager {
                 ResultSet rs = stmt.executeQuery();
 
                 if (rs.next()) {
-                    return rs.getInt(0);
+                    return rs.getInt(1);
                 }
             } finally {
                 if (con != null) con.close();
@@ -235,7 +235,7 @@ public class NodeManager {
                 ResultSet rs = stmt.executeQuery();
 
                 if (rs.next()) {
-                    return rs.getInt(0);
+                    return rs.getInt(1);
                 }
             } finally {
                 if (con != null) con.close();

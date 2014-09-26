@@ -83,18 +83,11 @@ public class CommunicationHandler {
         // Handle incoming packets
         connection.addPacketListener(new MessageEventDispatcher(), new PacketTypeFilter(Message.class));
 
-        // Log all outgoing packets
-        connection.addPacketInterceptor(new PacketInterceptor() {
-            @Override
-            public void interceptPacket(Packet packet) {
-                logger.log(Level.INFO, "Sent: {0}", packet.toXML());
-            }
-        }, new PacketTypeFilter(Message.class));
-
         connection.login(senderId + "@gcm.googleapis.com", apiKey);
     }
 
     public void sendMessage(MessageResponse response, String sender) {
+        MainEnvironment.getDefaultLogger().info("Sending message with ID " + response.getIdentifier());
         String jsonText = response.serializeToJson(sender, nextMessageId());
         try {
             send(jsonText);

@@ -49,6 +49,9 @@ public class MessageEventDispatcher implements PacketListener {
                 messageValues = (Map<String, Object>)messageValues.get("data");
                 String identifier = (String)messageValues.get("id");
                 handler = this.messageEvents.get(identifier);
+
+                Ack response = new Ack(sender);
+                MainEnvironment.getCommunicationHandler().sendMessage(response, sender);
             }
 
             // If this is a known message, invoke it

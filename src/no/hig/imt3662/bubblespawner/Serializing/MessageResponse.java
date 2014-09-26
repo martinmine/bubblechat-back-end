@@ -1,5 +1,6 @@
 package no.hig.imt3662.bubblespawner.Serializing;
 
+import no.hig.imt3662.bubblespawner.MainEnvironment;
 import org.json.simple.JSONValue;
 
 import java.util.HashMap;
@@ -30,9 +31,10 @@ public abstract class MessageResponse {
         Map<String, Object> message = new HashMap<String, Object>();
         message.put("to", receiver);
         message.put("message_id", nextMessageId);
-        message.put("data", JSONValue.toJSONString(this.message));
-
-        return JSONValue.toJSONString(message);
+        message.put("data", this.message);
+        String json = JSONValue.toJSONString(message);
+        MainEnvironment.getDefaultLogger().info("Sending json: " + json);
+        return json;
     }
 
     protected String serializeJSON() {
