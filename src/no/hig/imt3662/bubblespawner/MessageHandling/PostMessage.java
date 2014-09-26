@@ -8,7 +8,8 @@ import no.hig.imt3662.bubblespawner.Serializing.ChatMessage;
 import java.util.Map;
 
 /**
- * Created by marti_000 on 14/09/24.
+ * Message handler for chat messages the user wants to distribute
+ * Created by Martin on 14/09/24.
  */
 public class PostMessage implements MessageHandler {
     @Override
@@ -20,10 +21,13 @@ public class PostMessage implements MessageHandler {
         String username = (String) data.get("username");
 
         Location loc = new Location(latitude, longitude);
-        MainEnvironment.getNodeManager().updateNodeLocation(sender, loc);
         Node node = MainEnvironment.getNodeManager().getNode(sender);
-        ChatMessage response = new ChatMessage(node.getId(), message, node.getLocation(), broadcastLocation, username);
-        MainEnvironment.broadcastMessage(response, node.getLocation(), MainEnvironment.DEFAULT_RADIUS);
+        if (node != null) {
+            MainEnvironment.getNodeManager().updateNodeLocation(sender, loc);
+            Location chatLocation = broadcastLocation ? node.getLocation() : Location.EMPTY;
+            ChatMessage response = new ChatMessage(node.getId(), message, chatLocation, broadcastLocation, username);
+            MainEnvironment.broadcastMessage(response, node.getLocation(), MainEnvironment.DEFAULT_RADIUS);
+        }
     }
 
     @Override

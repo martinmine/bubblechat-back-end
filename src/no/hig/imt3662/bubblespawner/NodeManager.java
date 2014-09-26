@@ -3,11 +3,21 @@ package no.hig.imt3662.bubblespawner;
 import java.sql.*;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
+ * Responsible for keeping track of the nodes
  * Created by Martin on 14/09/25.
  */
 public class NodeManager {
+    private static final Logger LOGGER = Logger.getLogger(NodeManager.class.getName());
+
+    /**
+     * Gets all nodes within a given radius
+     * @param location The location of where we want nodes from (center)
+     * @param distance Length of the radius
+     * @return A list of nodes that is within the radius
+     */
     public List<Node> getNodesNearby(Location location, int distance) {
         Connection con = null;
         PreparedStatement stmt;
@@ -45,8 +55,7 @@ public class NodeManager {
             }
         }
         catch (SQLException ex) {
-            // TODO make own logger
-            MainEnvironment.getDefaultLogger().severe("SQL insertion error: " + ex.toString());
+            LOGGER.severe("SQL error: " + ex.toString());
         }
 
         return null;
@@ -57,6 +66,11 @@ public class NodeManager {
                 rs.getLong(5), rs.getLong(6));
     }
 
+    /**
+     * Updates a nodes location
+     * @param key The gcm identifier from gcm
+     * @param location Location of the node
+     */
     public void updateNodeLocation(String key, Location location) {
         Connection con = null;
         PreparedStatement stmt;
@@ -76,11 +90,16 @@ public class NodeManager {
             }
         }
         catch (SQLException ex) {
-            // TODO make own logger
-            MainEnvironment.getDefaultLogger().severe("SQL insertion error: " + ex.toString());
+            LOGGER.severe("SQL error: " + ex.toString());
         }
     }
 
+    /**
+     * Registers a new node
+     * @param key The gcm identifier from gcm
+     * @param location Location of the node
+     * @return user ID, incremented for each registration
+     */
     public int registerNode(String key, Location location) {
         Connection con = null;
         PreparedStatement stmt;
@@ -109,13 +128,17 @@ public class NodeManager {
             }
         }
         catch (SQLException ex) {
-            // TODO make own logger
-            MainEnvironment.getDefaultLogger().severe("SQL insertion error: " + ex.toString());
+            LOGGER.severe("SQL error: " + ex.toString());
         }
 
         return 0;
     }
 
+    /**
+     * Gets a node
+     * @param key The gcm identifier from gcm
+     * @return The node, null if it doesn't exist
+     */
     public Node getNode(String key) {
         Connection con = null;
         PreparedStatement stmt;
@@ -139,13 +162,16 @@ public class NodeManager {
             }
         }
         catch (SQLException ex) {
-            // TODO make own logger
-            MainEnvironment.getDefaultLogger().severe("SQL insertion error: " + ex.toString());
+            LOGGER.severe("SQL error: " + ex.toString());
         }
 
         return null;
     }
 
+    /**
+     * Sets the state of the node to pinged
+     * @param key The gcm identifier from gcm
+     */
     public void setNodePinged(String key) {
         Connection con = null;
         PreparedStatement stmt;
@@ -163,69 +189,66 @@ public class NodeManager {
             }
         }
         catch (SQLException ex) {
-            // TODO make own logger
-            MainEnvironment.getDefaultLogger().severe("SQL insertion error: " + ex.toString());
+            LOGGER.severe("SQL error: " + ex.toString());
         }
     }
 
-    public void setNodePingSent(String key) {
+    /**
+     * Gets amount of users within an area
+     * @param location Center coordinates
+     * @param radius Radius of the area
+     * @return Amount of users within our area
+     */
+    public int getUserCount(Location location, int radius) {
         Connection con = null;
         PreparedStatement stmt;
 
         try {
             try {
                 con = MainEnvironment.getDatabaseManager().getConnection();
-                stmt = con.prepareStatement("UPDATE Node SET lastPinged = ? "
-                        + "WHERE gcmKey = ?");
-                stmt.setLong(1, MainEnvironment.getCurrentTimestamp());
-                stmt.setString(2, key);
-                stmt.executeUpdate();
-            } finally {
-                if (con != null) con.close();
-            }
-        }
-        catch (SQLException ex) {
-            // TODO make own logger
-            MainEnvironment.getDefaultLogger().severe("SQL insertion error: " + ex.toString());
-        }
-    }
-
-    public int getUserCount(Location location, int radius) {
-        Connection con = null;
-        PreparedStatement stmt;
-
-        try {
-            try { // TODO get within a distance
-                con = MainEnvironment.getDatabaseManager().getConnection();
-                stmt = con.prepareStatement("SELECT COUNT(*) "
+                stmt = con.prepareStatement("SELECT "
+                        + "  COUNT(*), ( "
+                        + "    3959 * 1609.344 * acos ( "
+                        + "      cos(radians(?)) "
+                        + "      * cos(radians(latitude)) "
+                        + "      * cos(radians(longitude) - radians(?)) "
+                        + "      + sin (radians(?)) "
+                        + "      * sin(radians(latitude)) "
+                        + "    ) "
+                        + "  ) AS distance "
                         + "FROM Node "
-                        + "WHERE latitude = ? AND longitude = ?");
+                        + "HAVING distance < ?");
                 stmt.setDouble(1, location.getLatitude());
                 stmt.setDouble(2, location.getLongitude());
+                stmt.setDouble(3, location.getLatitude());
+                stmt.setInt(4, radius);
 
                 ResultSet rs = stmt.executeQuery();
 
-                if (rs.next()) {
+                if (rs.next())
                     return rs.getInt(1);
-                }
             } finally {
                 if (con != null) con.close();
             }
         }
         catch (SQLException ex) {
-            // TODO make own logger
-            MainEnvironment.getDefaultLogger().severe("SQL insertion error: " + ex.toString());
+            LOGGER.severe("SQL error: " + ex.toString());
         }
 
         return 0;
     }
 
-    public int getUserID(String key) {
+    /**
+     * Gets the ID of a node
+     * @param key The gcm identifier from gcm
+     * @return ID of the node, 0 if not exists
+     */
+    public int getNodeID(String key) {
         Connection con = null;
         PreparedStatement stmt;
 
         try {
-            try { // TODO get within a distance
+            try {
                 con = MainEnvironment.getDatabaseManager().getConnection();
                 stmt = con.prepareStatement("SELECT id "
                         + "FROM Node "
@@ -242,13 +265,17 @@ public class NodeManager {
             }
         }
         catch (SQLException ex) {
-            // TODO make own logger
-            MainEnvironment.getDefaultLogger().severe("SQL insertion error: " + ex.toString());
+            LOGGER.severe("SQL error: " + ex.toString());
         }
 
         return 0;
     }
 
+    /**
+     * Gets all nodes that has not said anything since a given time stamp
+     * @param timeout The last time stamp when a user has said anything
+     * @return Idle nodes
+     */
     public List<Node> findTimedOutNodes(long timeout){
         Connection con = null;
         PreparedStatement stmt;
@@ -272,9 +299,31 @@ public class NodeManager {
             }
         }
         catch (SQLException ex) {
-            // TODO make own logger
-            MainEnvironment.getDefaultLogger().severe("SQL insertion error: " + ex.toString());
+            LOGGER.severe("SQL error: " + ex.toString());
         }
         return null;
+    }
+
+    /**
+     * Destroys a node
+     * @param nodeID ID of the node to destroy
+     */
+    public void destroyNode(int nodeID) {
+        Connection con = null;
+        PreparedStatement stmt;
+
+        try {
+            try {
+                con = MainEnvironment.getDatabaseManager().getConnection();
+                stmt = con.prepareStatement("DELETE FROM Node WHERE id = ?");
+                stmt.setInt(1, nodeID);
+                stmt.executeUpdate();
+            } finally {
+                if (con != null) con.close();
+            }
+        }
+        catch (SQLException ex) {
+            LOGGER.severe("SQL error: " + ex.toString());
+        }
     }
 }

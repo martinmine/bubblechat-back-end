@@ -1,9 +1,11 @@
 package no.hig.imt3662.bubblespawner;
 
 /**
+ * General wrapper for latitude and longitude (double)
  * Created by Martin on 14/09/25.
  */
 public class Location {
+    public static final Location EMPTY = new Location(0, 0);
     private double latitude;
     private double longitude;
 

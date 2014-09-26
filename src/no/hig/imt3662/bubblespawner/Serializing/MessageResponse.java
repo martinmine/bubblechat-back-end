@@ -5,17 +5,27 @@ import org.json.simple.JSONValue;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * Created by Martin on 14/09/24.
  */
 public abstract class MessageResponse {
+    private static final Logger LOGGER = Logger.getLogger(MessageResponse.class.getName());
     private Map<String, Object> message;
 
+    /**
+     * Create a new MessageResponse and prepare it for usage
+     */
     public MessageResponse() {
         this.message = new HashMap<String, Object>();
     }
 
+    /**
+     * Set a value in the response (key: value in JSON)
+     * @param key Identifier
+     * @param value Actual value
+     */
     public void setValue(String key, Object value) {
         message.put(key, value);
     }
@@ -25,15 +35,21 @@ public abstract class MessageResponse {
         setValue("identifier", identifier);
     }
 
-    public String serializeToJson(String receiver, String nextMessageId) {
+    /**
+     * Serializes the response to a JSON string
+     * @param receiver ID of whom is receiving the message
+     * @param messageID Unique ID of the message
+     * @return JSON text
+     */
+    public String serializeToJson(String receiver, String messageID) {
         writeHeader();
 
         Map<String, Object> message = new HashMap<String, Object>();
         message.put("to", receiver);
-        message.put("message_id", nextMessageId);
+        message.put("message_id", messageID);
         message.put("data", this.message);
         String json = JSONValue.toJSONString(message);
-        MainEnvironment.getDefaultLogger().info("Sending json: " + json);
+        LOGGER.info("Sending json: " + json);
         return json;
     }
 
@@ -41,5 +57,9 @@ public abstract class MessageResponse {
         return JSONValue.toJSONString(this.message);
     }
 
+    /**
+     * Gets the identifier of the message
+     * @return Identifier
+     */
     public abstract String getIdentifier();
 }

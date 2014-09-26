@@ -1,6 +1,7 @@
 package no.hig.imt3662.bubblespawner.Serializing;
 
 /**
+ * Server info message which gives general information about the server status
  * Created by Martin on 14/09/24.
  */
 public class ServerInfo extends MessageResponse {

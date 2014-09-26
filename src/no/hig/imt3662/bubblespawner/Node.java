@@ -1,6 +1,7 @@
 package no.hig.imt3662.bubblespawner;
 
 /**
+ * Holds information about one node
  * Created by Martin on 14/09/25.
  */
 public class Node {
@@ -17,15 +18,6 @@ public class Node {
         this.lastPinged = lastPinged;
         this.lastPingReceived = lastPingReceived;
     }
-
-    public Node(int id, String key, Location location) {
-        this.id = id;
-        this.key = key;
-        this.location = location;
-
-        this.lastPinged = this.lastPingReceived = MainEnvironment.getCurrentTimestamp();
-    }
-
     public int getId() {
         return id;
     }

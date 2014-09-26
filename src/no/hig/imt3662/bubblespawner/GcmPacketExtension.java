@@ -11,6 +11,8 @@ import java.util.Map;
 
 /**
  * XMPP Packet Extension for GCM Cloud Connection Server.
+ * This class is copied and modified from
+ *   https://developer.android.com/google/gcm/ccs.html
  */
 final class GcmPacketExtension extends DefaultPacketExtension {
 
@@ -27,7 +29,8 @@ final class GcmPacketExtension extends DefaultPacketExtension {
 
     @Override
     public String toXML() {
-        return String.format("<%s xmlns=\"%s\">%s</%s>", MainEnvironment.GCM_ELEMENT_NAME, MainEnvironment.GCM_NAMESPACE, StringUtils.escapeForXML(json), MainEnvironment.GCM_ELEMENT_NAME);
+        return String.format("<%s xmlns=\"%s\">%s</%s>", MainEnvironment.GCM_ELEMENT_NAME,
+                MainEnvironment.GCM_NAMESPACE, StringUtils.escapeForXML(json), MainEnvironment.GCM_ELEMENT_NAME);
     }
 
     @Override

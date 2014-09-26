@@ -1,8 +1,8 @@
 package no.hig.imt3662.bubblespawner.Serializing;
 
-import org.json.simple.JSONValue;
 
 /**
+ * Template for responding to ack messages
  * Created by Martin on 14/09/24.
  */
 public class Ack extends MessageResponse {
@@ -25,10 +25,10 @@ public class Ack extends MessageResponse {
     }
 
     @Override
-    public String serializeToJson(String receiver, String nextMessageId) {
+    public String serializeToJson(String receiver, String messageID) {
         writeHeader();
         setValue("to", receiver);
-        setValue("message_id", messageID);
+        setValue("message_id", this.messageID);
 
         return serializeJSON();
     }

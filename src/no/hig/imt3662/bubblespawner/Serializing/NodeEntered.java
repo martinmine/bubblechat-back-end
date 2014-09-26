@@ -1,6 +1,7 @@
 package no.hig.imt3662.bubblespawner.Serializing;
 
 /**
+ * Message used when a node is entering in an area
  * Created by Martin on 14/09/24.
  */
 public class NodeEntered extends MessageResponse {

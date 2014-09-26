@@ -11,13 +11,20 @@ import org.json.simple.parser.ParseException;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
+ * This class receives messages and delegates them to their proper message handler (MessageHandler)
  * Created by Martin on 14/09/24.
  */
 public class MessageEventDispatcher implements PacketListener {
+    private static final Logger LOGGER = Logger.getLogger(MessageEventDispatcher.class.getName());
     private Map<String, MessageHandler> messageEvents;
 
+    /**
+     * Creates a new message handler and registers all known messages
+     * Note for further development: This could be done using reflection to make the code cleaner
+     */
     public MessageEventDispatcher() {
         this.messageEvents = new HashMap<String, MessageHandler>();
 
@@ -31,6 +38,11 @@ public class MessageEventDispatcher implements PacketListener {
         messageEvents.put(handler.getIdentifier(), handler);
     }
 
+    /**
+     * Process a message from GCM and delegates it to the correct message handler
+     * @param packet
+     * @throws SmackException.NotConnectedException
+     */
     @Override
     public void processPacket(Packet packet) throws SmackException.NotConnectedException {
         GcmPacketExtension gcmPacket = (GcmPacketExtension) packet.getExtension(MainEnvironment.GCM_NAMESPACE);
@@ -39,6 +51,9 @@ public class MessageEventDispatcher implements PacketListener {
             Map<String, Object> messageValues = gcmPacket.getJsonValues();
             MessageHandler handler = null;
             String sender = (String)messageValues.get("from");
+
+            Ack response = new Ack(sender);
+            MainEnvironment.getCommunicationHandler().sendMessage(response, sender);
 
             if (messageValues.containsKey("message_type")) { // Communication-level message
                 String identifier = (String)messageValues.get("message_type");
@@ -49,21 +64,18 @@ public class MessageEventDispatcher implements PacketListener {
                 messageValues = (Map<String, Object>)messageValues.get("data");
                 String identifier = (String)messageValues.get("id");
                 handler = this.messageEvents.get(identifier);
-
-                Ack response = new Ack(sender);
-                MainEnvironment.getCommunicationHandler().sendMessage(response, sender);
             }
 
             // If this is a known message, invoke it
             if (handler != null) {
-                MainEnvironment.getDefaultLogger().info("Invoking handler for ID " + handler.getIdentifier());
+                LOGGER.info("Invoking handler for ID " + handler.getIdentifier());
                 handler.invoke(messageValues, sender);
             }
             else {
-                MainEnvironment.getDefaultLogger().severe("Unknown or missing ID: " + packet.toString());
+                LOGGER.severe("Unknown or missing ID: " + packet.toString());
             }
-        } catch (ParseException e) {
-            MainEnvironment.getDefaultLogger().severe("Exception during parsing: " + e.toString());
+        } catch (Exception e) {
+            LOGGER.severe("Exception during parsing/handling: " + e.toString());
         }
     }
 }

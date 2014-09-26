@@ -13,31 +13,29 @@ import org.xmlpull.v1.XmlPullParser;
 
 import javax.net.ssl.SSLSocketFactory;
 import java.io.IOException;
-import java.util.List;
 import java.util.UUID;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * Manages all general communication towards gcm
+ * Note: This class is refactored from the tutorial on GCM:
+ *   https://developer.android.com/google/gcm/ccs.html
  * Created by Martin on 14/09/24.
  */
 public class CommunicationHandler {
-
-    private Logger logger;
-
+    private static final Logger LOGGER = Logger.getLogger(CommunicationHandler.class.getName());
     private String gcmServer;
     private int gcmPort;
-
-
     private XMPPConnection connection;
 
-    public static CommunicationHandler instance; //TODO remove this
-
+    /**
+     * Prepares for connection to gcm
+     * @param gcmServer The gcm server hostname
+     * @param gcmPort The gcm port to use
+     */
     public CommunicationHandler(String gcmServer, int gcmPort) {
-        instance = this; // TODO remove this
         this.gcmServer = gcmServer;
         this.gcmPort = gcmPort;
-        this.logger = Logger.getLogger("SmackCcsClient");
 
         ProviderManager.addExtensionProvider(MainEnvironment.GCM_ELEMENT_NAME, MainEnvironment.GCM_NAMESPACE,
                 new PacketExtensionProvider() {
@@ -59,7 +57,6 @@ public class CommunicationHandler {
         connection.sendPacket(request);
     }
 
-
     /**
      * Connects to GCM Cloud Connection Server using the supplied credentials.
      *
@@ -78,7 +75,7 @@ public class CommunicationHandler {
         connection = new XMPPTCPConnection(config);
         connection.connect();
 
-        connection.addConnectionListener(new LoggingConnectionListener());
+        connection.addConnectionListener(new ConnectionEventLogger());
 
         // Handle incoming packets
         connection.addPacketListener(new MessageEventDispatcher(), new PacketTypeFilter(Message.class));
@@ -86,15 +83,18 @@ public class CommunicationHandler {
         connection.login(senderId + "@gcm.googleapis.com", apiKey);
     }
 
+    /**
+     * Send a message to someone through gcm
+     * @param response The message content
+     * @param sender Receiver of the message
+     */
     public void sendMessage(MessageResponse response, String sender) {
-        MainEnvironment.getDefaultLogger().info("Sending message with ID " + response.getIdentifier());
+        LOGGER.info("Sending message with ID " + response.getIdentifier());
         String jsonText = response.serializeToJson(sender, nextMessageId());
         try {
             send(jsonText);
         } catch (SmackException.NotConnectedException e) {
-            // TODO
+            LOGGER.warning("Unable to send message: " + e.getMessage());
         }
     }
-
-
 }

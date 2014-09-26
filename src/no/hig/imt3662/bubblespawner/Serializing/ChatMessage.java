@@ -3,6 +3,7 @@ package no.hig.imt3662.bubblespawner.Serializing;
 import no.hig.imt3662.bubblespawner.Location;
 
 /**
+ * Template for creating chat messages
  * Created by Martin on 14/09/24.
  */
 public class ChatMessage extends MessageResponse {

@@ -1,20 +1,17 @@
 package no.hig.imt3662.bubblespawner.MessageHandling;
 
 import no.hig.imt3662.bubblespawner.MainEnvironment;
-import no.hig.imt3662.bubblespawner.Serializing.Ack;
 
 import java.util.Map;
 
 /**
+ * Handles ack messages from gcm
  * Created by marti_000 on 14/09/24.
  */
 public class AckHandler implements MessageHandler {
     @Override
     public void invoke(Map<String, Object> data, String sender) {
-        Ack response = new Ack(sender);
-        MainEnvironment.getCommunicationHandler().sendMessage(response, sender);
-
-        int userID = MainEnvironment.getNodeManager().getUserID(sender);
+        int userID = MainEnvironment.getNodeManager().getNodeID(sender);
         if (userID > 0) {
             MainEnvironment.getNodeManager().setNodePinged(sender);
         }

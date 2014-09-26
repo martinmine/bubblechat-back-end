@@ -1,21 +1,17 @@
 package no.hig.imt3662.bubblespawner;
 
-import no.hig.imt3662.bubblespawner.MessageHandling.DestroyNode;
 import no.hig.imt3662.bubblespawner.Serializing.NodeLeft;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.logging.Logger;
 
 /**
  * Created by Martin on 14/09/25.
  */
 public class Pinger extends TimerTask {
+    private static final Logger LOGGER = Logger.getLogger(Pinger.class.getName());
     private Timer pingScheduler;
     private long pingInterval;
 
@@ -31,9 +27,8 @@ public class Pinger extends TimerTask {
         for (Node node : nodes) {
             NodeLeft leaveMessage = new NodeLeft(node.getId());
             MainEnvironment.broadcastMessage(leaveMessage, node.getLocation(), MainEnvironment.DEFAULT_RADIUS);
+            MainEnvironment.getNodeManager().destroyNode(node.getId());
+            LOGGER.info("Node " + node.getId() + " timed out");
         }
-
     }
-
-
 }

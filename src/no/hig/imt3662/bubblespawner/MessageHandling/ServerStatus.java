@@ -2,14 +2,13 @@ package no.hig.imt3662.bubblespawner.MessageHandling;
 
 import no.hig.imt3662.bubblespawner.Location;
 import no.hig.imt3662.bubblespawner.MainEnvironment;
-import no.hig.imt3662.bubblespawner.Node;
 import no.hig.imt3662.bubblespawner.Serializing.ServerInfo;
 
 import java.util.Map;
-import java.util.logging.Level;
 
 /**
- * Created by marti_000 on 14/09/24.
+ * This message is used to authenticate and request how many users are near the user
+ * Created by Martin on 14/09/24.
  */
 public class ServerStatus implements MessageHandler {
     @Override
@@ -18,7 +17,7 @@ public class ServerStatus implements MessageHandler {
         double longitude = Double.parseDouble((String) data.get("longitude"));
         Location location = new Location(latitude, longitude);
 
-        int userID = MainEnvironment.getNodeManager().getUserID(sender);
+        int userID = MainEnvironment.getNodeManager().getNodeID(sender);
         if (userID == 0) { // Not registered yet
             userID = MainEnvironment.getNodeManager().registerNode(sender, location);
         }
