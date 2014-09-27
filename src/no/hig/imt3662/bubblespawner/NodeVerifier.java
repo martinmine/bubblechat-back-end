@@ -23,12 +23,13 @@ public class NodeVerifier extends TimerTask {
     public NodeVerifier(long interval) {
         this.interval = interval;
         this.scheduler = new Timer();
-        this.scheduler.schedule(this, interval, interval);
+        this.scheduler.schedule(this, interval * 1000, interval * 1000);
     }
 
     @Override
     public void run() {
-        List<Node> nodes = MainEnvironment.getNodeManager().findTimedOutNodes(2 * interval);
+        List<Node> nodes = MainEnvironment.getNodeManager().findTimedOutNodes(MainEnvironment.getCurrentTimestamp() - (2 * interval));
+        LOGGER.info("Timed out " + nodes.size() + " nodes < " + (MainEnvironment.getCurrentTimestamp() - (2 * interval)));
         for (Node node : nodes) {
             NodeLeft leaveMessage = new NodeLeft(node.getId());
             MainEnvironment.broadcastMessage(leaveMessage, node.getLocation(), MainEnvironment.DEFAULT_RADIUS);

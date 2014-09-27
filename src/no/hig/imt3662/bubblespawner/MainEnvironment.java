@@ -17,7 +17,7 @@ import java.util.logging.Logger;
 public class MainEnvironment {
     private static final Logger LOGGER = Logger.getLogger(MainEnvironment.class.getName());
 
-    public static final int DEFAULT_RADIUS = 30;
+    public static final int DEFAULT_RADIUS = 100000;
     public static final String GCM_ELEMENT_NAME = "gcm";
     public static final String GCM_NAMESPACE = "google:mobile:data";
 

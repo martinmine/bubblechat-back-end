@@ -25,6 +25,9 @@ public class ServerStatus implements MessageHandler {
             NodeEntered nodeEntered = new NodeEntered(userID);
             MainEnvironment.broadcastMessage(nodeEntered, location, MainEnvironment.DEFAULT_RADIUS);
         }
+        else {
+            MainEnvironment.getNodeManager().updateNodeLocation(sender, location);
+        }
 
         int userCount = MainEnvironment.getNodeManager().getNodeCount(location, MainEnvironment.DEFAULT_RADIUS);
 

@@ -28,7 +28,7 @@ public class NodeManager {
                 //  https://developers.google.com/maps/articles/phpsqlsearch_v3#findnearsql
                 con = MainEnvironment.getDatabaseManager().getConnection();
                 stmt = con.prepareStatement("SELECT "
-                        + "  id, gcmKey, latitude, longitude, lastPinged, lastPingReceived, ( "
+                        + "  id, gcmKey, latitude, longitude, lastPinged, ( "
                         + "    3959 * 1609.344 * acos ( "
                         + "      cos(radians(?)) "
                         + "      * cos(radians(latitude)) "
@@ -65,7 +65,7 @@ public class NodeManager {
 
     private Node getNodeFromRow(ResultSet rs) throws SQLException {
         return new Node(rs.getInt(1), rs.getString(2), new Location(rs.getDouble(3), rs.getDouble(4)),
-                rs.getLong(5), rs.getLong(6));
+                rs.getLong(5));
     }
 
     /**
@@ -109,11 +109,12 @@ public class NodeManager {
         try {
             try {
                 con = MainEnvironment.getDatabaseManager().getConnection();
-                stmt = con.prepareStatement("INSERT INTO Node (gcmKey, latitude, longitude) "
-                        + "VALUES (?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+                stmt = con.prepareStatement("INSERT INTO Node (gcmKey, latitude, longitude, lastPinged) "
+                        + "VALUES (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
                 stmt.setString(1, key);
                 stmt.setDouble(2, location.getLatitude());
                 stmt.setDouble(3, location.getLongitude());
+                stmt.setLong(4, MainEnvironment.getCurrentTimestamp());
                 stmt.executeUpdate();
 
                 ResultSet rs = stmt.getGeneratedKeys();
@@ -148,7 +149,7 @@ public class NodeManager {
         try {
             try {
                 con = MainEnvironment.getDatabaseManager().getConnection();
-                stmt = con.prepareStatement("SELECT id, gcmKey, latitude, longitude, lastPinged, lastPingReceived "
+                stmt = con.prepareStatement("SELECT id, gcmKey, latitude, longitude, lastPinged "
                         + "FROM Node "
                         + "WHERE gcmKey = ?");
                 stmt.setString(1, key);
@@ -181,7 +182,7 @@ public class NodeManager {
         try {
             try {
                 con = MainEnvironment.getDatabaseManager().getConnection();
-                stmt = con.prepareStatement("UPDATE Node SET lastPingReceived = ? "
+                stmt = con.prepareStatement("UPDATE Node SET lastPinged = ? "
                         + "WHERE gcmKey = ?");
                 stmt.setLong(1, MainEnvironment.getCurrentTimestamp());
                 stmt.setString(2, key);
@@ -285,7 +286,8 @@ public class NodeManager {
         try {
             try {
                 con = MainEnvironment.getDatabaseManager().getConnection();
-                stmt = con.prepareStatement("SELECT id FROM node WHERE lastPingReceived < ?");
+                stmt = con.prepareStatement("SELECT id, gcmKey, latitude, longitude, lastPinged "
+                                + "FROM node WHERE lastPinged < ?");
                 stmt.setLong(1, timeout);
 
                 ResultSet rs = stmt.executeQuery();

@@ -9,14 +9,12 @@ public class Node {
     private String key;
     private Location location;
     private long lastPinged;
-    private long lastPingReceived;
 
-    public Node(int id, String key, Location location, long lastPinged, long lastPingReceived) {
+    public Node(int id, String key, Location location, long lastPinged) {
         this.id = id;
         this.key = key;
         this.location = location;
         this.lastPinged = lastPinged;
-        this.lastPingReceived = lastPingReceived;
     }
     public int getId() {
         return id;
@@ -48,13 +46,5 @@ public class Node {
 
     public void setLastPinged(long lastPinged) {
         this.lastPinged = lastPinged;
-    }
-
-    public long getLastPingReceived() {
-        return lastPingReceived;
-    }
-
-    public void setLastPingReceived(long lastPingReceived) {
-        this.lastPingReceived = lastPingReceived;
     }
 }
