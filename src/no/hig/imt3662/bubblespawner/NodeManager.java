@@ -80,11 +80,12 @@ public class NodeManager {
         try {
             try {
                 con = MainEnvironment.getDatabaseManager().getConnection();
-                stmt = con.prepareStatement("UPDATE Node SET latitude = ?, longitude = ? "
+                stmt = con.prepareStatement("UPDATE Node SET latitude = ?, longitude = ?, lastPinged = ? "
                         + "WHERE gcmKey = ?");
                 stmt.setDouble(1, location.getLatitude());
                 stmt.setDouble(2, location.getLongitude());
-                stmt.setString(3, key);
+                stmt.setLong(3, MainEnvironment.getCurrentTimestamp());
+                stmt.setString(4, key);
                 stmt.executeUpdate();
 
             } finally {

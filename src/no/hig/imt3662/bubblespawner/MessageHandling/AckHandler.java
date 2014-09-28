@@ -1,7 +1,5 @@
 package no.hig.imt3662.bubblespawner.MessageHandling;
 
-import no.hig.imt3662.bubblespawner.MainEnvironment;
-
 import java.util.Map;
 
 /**
@@ -11,10 +9,10 @@ import java.util.Map;
 public class AckHandler implements MessageHandler {
     @Override
     public void invoke(Map<String, Object> data, String sender) {
-        int userID = MainEnvironment.getNodeManager().getNodeID(sender);
+        /*int userID = MainEnvironment.getNodeManager().getNodeID(sender);
         if (userID > 0) {
             MainEnvironment.getNodeManager().setNodePinged(sender);
-        }
+        }*/
     }
 
     @Override

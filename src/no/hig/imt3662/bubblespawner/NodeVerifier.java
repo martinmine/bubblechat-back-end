@@ -35,6 +35,7 @@ public class NodeVerifier extends TimerTask {
             MainEnvironment.broadcastMessage(leaveMessage, node.getLocation(), MainEnvironment.DEFAULT_RADIUS);
             MainEnvironment.getNodeManager().destroyNode(node.getId());
             LOGGER.info("Node " + node.getId() + " timed out");
+            LOGGER.finest("Current timestamp: " + MainEnvironment.getCurrentTimestamp() + " Last pinged: " + node.getLastPinged());
         }
     }
 }

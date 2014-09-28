@@ -68,11 +68,7 @@ public class MainEnvironment {
 
         try {
             communicationHandler.connect(senderId, password);
-        } catch (XMPPException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (SmackException e) {
+        } catch (XMPPException | IOException | SmackException e) {
             e.printStackTrace();
         }
 
