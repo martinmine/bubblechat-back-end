@@ -288,7 +288,7 @@ public class NodeManager {
             try {
                 con = MainEnvironment.getDatabaseManager().getConnection();
                 stmt = con.prepareStatement("SELECT id, gcmKey, latitude, longitude, lastPinged "
-                                + "FROM node WHERE lastPinged < ?");
+                                + "FROM Node WHERE lastPinged < ?");
                 stmt.setLong(1, timeout);
 
                 ResultSet rs = stmt.executeQuery();
