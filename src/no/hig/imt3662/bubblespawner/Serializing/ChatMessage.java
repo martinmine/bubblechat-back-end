@@ -8,8 +8,6 @@ import no.hig.imt3662.bubblespawner.Location;
  */
 public class ChatMessage extends MessageResponse {
     public ChatMessage(int userID, String message, Location location, boolean broadcastLocation, String username) {
-        super();
-
         setValue("user_id", userID);
         setValue("message_text", message);
         setValue("has_location", broadcastLocation);

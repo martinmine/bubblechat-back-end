@@ -9,9 +9,12 @@ import java.io.InputStreamReader;
  */
 public class Main {
 
+    /**
+     * Main entry for the program
+     * @param args Arguments from startup call
+     */
     public static void main(String[] args) {
-
-        MainEnvironment.initialize();
+        MainEnvironment.initialize(false);
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String s = new String();
         do {

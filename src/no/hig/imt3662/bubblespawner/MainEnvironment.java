@@ -38,7 +38,7 @@ public class MainEnvironment {
         return nodeManager;
     }
 
-    public static void initialize() {
+    public static void initialize(boolean silent) {
         LOGGER.info("Initializing main environment");
 
         Properties properties = new Properties();
@@ -65,15 +65,17 @@ public class MainEnvironment {
         dbManager = new DatabaseManager(dbUsername, dbPassword, dbName, dbHostname, dbPort);
 
         communicationHandler = new CommunicationHandler(gcmServer, gcmPort);
-
-        try {
-            communicationHandler.connect(senderId, password);
-        } catch (XMPPException | IOException | SmackException e) {
-            e.printStackTrace();
-        }
-
         nodeManager = new NodeManager();
-        pingManager = new NodeVerifier(pingInterval);
+
+        if (silent == false) {
+            pingManager = new NodeVerifier(pingInterval);
+
+            try {
+                communicationHandler.connect(senderId, password);
+            } catch (XMPPException | IOException | SmackException e) {
+                e.printStackTrace();
+            }
+        }
 
         LOGGER.info("Initialized");
     }

@@ -9,7 +9,6 @@ public class Ack extends MessageResponse {
     private String messageID;
 
     public Ack(String messageID) {
-        super();
         this.messageID = messageID;
     }
 

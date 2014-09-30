@@ -57,6 +57,10 @@ public abstract class MessageResponse {
         return JSONValue.toJSONString(this.message);
     }
 
+    public Map<String, Object> getMessage() {
+        return message;
+    }
+
     /**
      * Gets the identifier of the message
      * @return Identifier

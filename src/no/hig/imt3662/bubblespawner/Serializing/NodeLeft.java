@@ -6,7 +6,6 @@ package no.hig.imt3662.bubblespawner.Serializing;
  */
 public class NodeLeft extends MessageResponse {
     public NodeLeft(int userID) {
-        super();
         setValue("user_id", userID);
     }
 

@@ -31,7 +31,7 @@ public class ServerStatus implements MessageHandler {
 
         int userCount = MainEnvironment.getNodeManager().getNodeCount(location, MainEnvironment.DEFAULT_RADIUS);
 
-        ServerInfo response = new ServerInfo(userCount, userID);
+        ServerInfo response = new ServerInfo(userCount, userID, MainEnvironment.DEFAULT_RADIUS);
         MainEnvironment.getCommunicationHandler().sendMessage(response, sender);
     }
 

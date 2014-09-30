@@ -26,6 +26,9 @@ public class NodeManager {
             try {
                 // Thanks to Google for this query:
                 //  https://developers.google.com/maps/articles/phpsqlsearch_v3#findnearsql
+                // this could be optimized in the future by location users in a square
+                // and use BETWEEN (maxLat, minLat) etc. in order to take advantage of indexes
+                // to make the application scale easier.
                 con = MainEnvironment.getDatabaseManager().getConnection();
                 stmt = con.prepareStatement("SELECT "
                         + "  id, gcmKey, latitude, longitude, lastPinged, ( "
@@ -288,7 +291,7 @@ public class NodeManager {
             try {
                 con = MainEnvironment.getDatabaseManager().getConnection();
                 stmt = con.prepareStatement("SELECT id, gcmKey, latitude, longitude, lastPinged "
-                                + "FROM Node WHERE lastPinged < ?");
+                                + "FROM Node WHERE lastPinged <= ?");
                 stmt.setLong(1, timeout);
 
                 ResultSet rs = stmt.executeQuery();

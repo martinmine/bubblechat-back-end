@@ -5,10 +5,10 @@ package no.hig.imt3662.bubblespawner.Serializing;
  * Created by Martin on 14/09/24.
  */
 public class ServerInfo extends MessageResponse {
-    public ServerInfo(int userCount, int userID) {
-        super();
-        setValue("user_count", String.valueOf(userCount));
+    public ServerInfo(int userCount, int userID, int radius) {
+        setValue("user_count", userCount);
         setValue("user_id", userID);
+        setValue("radius", radius);
     }
 
     @Override
